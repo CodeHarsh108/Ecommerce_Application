@@ -58,6 +58,8 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
 
+    @Getter
+    @Setter
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_address",
         joinColumns = @JoinColumn(name = "user_id"),
