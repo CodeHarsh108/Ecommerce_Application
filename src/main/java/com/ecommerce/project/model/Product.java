@@ -39,9 +39,7 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private Set<Product> products;
+
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
