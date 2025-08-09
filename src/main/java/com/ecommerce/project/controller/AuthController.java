@@ -122,7 +122,15 @@ public class AuthController {
         if(authentication != null){
             return authentication.getName();
         }else{
-            return "NULL";
+            return "";
         }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserDetails(Authentication authentication){
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream().map(item-> item.getAuthority()).collect(Collectors.toList());
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles);
+        return  ResponseEntity.ok().body(response);
     }
 }
