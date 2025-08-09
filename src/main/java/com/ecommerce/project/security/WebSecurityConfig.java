@@ -54,6 +54,7 @@ public class WebSecurityConfig {
         return authenticationProvider;
     }
 
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
@@ -63,7 +64,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((requests) -> requests.requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/sh2-console/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/public").permitAll()
                 .requestMatchers("/api/admin").permitAll()
                 .requestMatchers("/api/test").permitAll()
@@ -97,19 +98,19 @@ public class WebSecurityConfig {
     public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             // Retrieve or create roles
-            Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
+            Role userRole = roleRepository.findByRolename(AppRole.ROLE_USER)
                     .orElseGet(() -> {
                         Role newUserRole = new Role(AppRole.ROLE_USER);
                         return roleRepository.save(newUserRole);
                     });
 
-            Role sellerRole = roleRepository.findByRoleName(AppRole.ROLE_SELLER)
+            Role sellerRole = roleRepository.findByRolename(AppRole.ROLE_SELLER)
                     .orElseGet(() -> {
                         Role newSellerRole = new Role(AppRole.ROLE_SELLER);
                         return roleRepository.save(newSellerRole);
                     });
 
-            Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+            Role adminRole = roleRepository.findByRolename(AppRole.ROLE_ADMIN)
                     .orElseGet(() -> {
                         Role newAdminRole = new Role(AppRole.ROLE_ADMIN);
                         return roleRepository.save(newAdminRole);
@@ -121,33 +122,33 @@ public class WebSecurityConfig {
 
 
             // Create users if not already present
-            if (!userRepository.existsByUserName("user1")) {
+            if (!userRepository.existsByUsername("user1")) {
                 User user1 = new User("user1", "user1@example.com", passwordEncoder.encode("password1"));
                 userRepository.save(user1);
             }
 
-            if (!userRepository.existsByUserName("seller1")) {
+            if (!userRepository.existsByUsername("seller1")) {
                 User seller1 = new User("seller1", "seller1@example.com", passwordEncoder.encode("password2"));
                 userRepository.save(seller1);
             }
 
-            if (!userRepository.existsByUserName("admin")) {
+            if (!userRepository.existsByUsername("admin")) {
                 User admin = new User("admin", "admin@example.com", passwordEncoder.encode("adminPass"));
                 userRepository.save(admin);
             }
 
             // Update roles for existing users
-            userRepository.findByUserName("user1").ifPresent(user -> {
+            userRepository.findByUsername("user1").ifPresent(user -> {
                 user.setRoles(userRoles);
                 userRepository.save(user);
             });
 
-            userRepository.findByUserName("seller1").ifPresent(seller -> {
+            userRepository.findByUsername("seller1").ifPresent(seller -> {
                 seller.setRoles(sellerRoles);
                 userRepository.save(seller);
             });
 
-            userRepository.findByUserName("admin").ifPresent(admin -> {
+            userRepository.findByUsername("admin").ifPresent(admin -> {
                 admin.setRoles(adminRoles);
                 userRepository.save(admin);
             });
