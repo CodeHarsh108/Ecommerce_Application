@@ -38,11 +38,14 @@ public class UserDetailsImpl implements UserDetails {
 
 
     static UserDetailsImpl build(User user){
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRolename().name())).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = (user.getRoles() == null ? List.<GrantedAuthority>of() :
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getRolename().name()))
+                        .collect(Collectors.toList()));
 
         return new UserDetailsImpl(
                 user.getUserId(),
-                user.getUserName(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
                 authorities
