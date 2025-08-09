@@ -31,7 +31,7 @@ public class User {
     @NotBlank
     @Size(max = 20)
     @Column(name = "username")
-    private String userName;
+    private String username;
 
     @NotBlank
     @Size(max = 50)
@@ -44,8 +44,8 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    public User(String userName, String email, String password) {
-        this.userName = userName;
+    public User(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -62,7 +62,7 @@ public class User {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_address",
         joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id ")
+            inverseJoinColumns = @JoinColumn(name = "address_id")
     )
     private List<Address> addresses = new ArrayList<>();
 
