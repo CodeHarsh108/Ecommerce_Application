@@ -1,5 +1,6 @@
 package com.ecommerce.project.security.jwt;
 
+import com.ecommerce.project.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -39,7 +40,7 @@ public class JwtUtils {
 
 
     // Generating token from username
-    public String generateTokenFromUsername(UserDetails userDetails){
+    public String generateTokenFromUsername(UserDetailsImpl userDetails){
         String username = userDetails.getUsername();
         return Jwts.builder().
                 subject(username).
@@ -52,7 +53,7 @@ public class JwtUtils {
 
 
     // Getting Username from JWT token
-    public String getUserNameFromJwtToke(String token){
+    public String getUserNameFromJwtToken(String token){
         return Jwts.parser().
                 verifyWith((SecretKey) key()).
                 build().parseSignedClaims(token).
@@ -60,7 +61,7 @@ public class JwtUtils {
     }
 
     // Generating signing key
-    public Key key(){
+    public SecretKey key(){
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
