@@ -10,12 +10,16 @@ import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.repository.CartItemRepository;
 import com.ecommerce.project.repository.CartRepository;
 import com.ecommerce.project.repository.ProductRepository;
+import com.ecommerce.project.util.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+@Service
 public class CartServiceImpl implements CartService{
 
     @Autowired
@@ -34,7 +38,7 @@ public class CartServiceImpl implements CartService{
     ModelMapper modelMapper;
 
     @Override
-    public Object addProductToCart(Long productId, Integer quantity)  {
+    public CartDTO addProductToCart(Long productId, Integer quantity) {
         //Find existing cart or create one
         Cart cart = createCart();
         //Retrieve Product Details
@@ -42,13 +46,13 @@ public class CartServiceImpl implements CartService{
         //Perform Validations
         CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cart.getCartId(), productId);
         if(cartItem != null) {
-            return new APIException("Product " + product.getProductName() + "already exists in the cart");
+            throw new APIException("Product " + product.getProductName() + "already exists in the cart");
         }
         if(product.getQuantity() == 0){
-            return new APIException("Product " + product.getProductName() + "is not available");
+            throw new APIException("Product " + product.getProductName() + "is not available");
         }
         if(product.getQuantity() < quantity){
-            return new APIException("Please make an order of the : " + product.getProductName() + " less than or equal to the quantity " + product.getQuantity() + ".");
+            throw new APIException("Please make an order of the : " + product.getProductName() + " less than or equal to the quantity " + product.getQuantity() + ".");
         }
         //Create Cart Item
         CartItem newCartItem = new CartItem();
@@ -85,7 +89,7 @@ public class CartServiceImpl implements CartService{
         }
         Cart cart = new Cart();
         cart.setTotalPrice(0.00);
-        cart.setUser(authUtil.loggedInUser);
+        cart.setUser(authUtil.loggedInUser());
         Cart newCart = cartRepository.save(cart);
         return newCart;
     }

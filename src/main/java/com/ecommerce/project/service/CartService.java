@@ -1,5 +1,8 @@
 package com.ecommerce.project.service;
 
+import com.ecommerce.project.payload.CartDTO;
+import org.springframework.http.ResponseEntity;
+
 public interface CartService {
-    Object addProductToCart(Long productId, Integer quantity);
+    CartDTO addProductToCart(Long productId, Integer quantity);
 }
