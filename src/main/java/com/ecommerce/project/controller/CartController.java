@@ -45,9 +45,14 @@ public class CartController {
         String email = authUtil.loggedInEmail();
         Cart cart = cartRepository.findCartByEmail(email);
         Long cartId = cart.getCartId();
-        CartDTO cartDTO = cartService.getCart(email, cartId);
+        CartDTO cartDTO =  cartService.getCart(email, cartId);
         return new ResponseEntity<CartDTO>(cartDTO, HttpStatus.OK);
+    }
 
+    @PutMapping("/cart/products/{productId}/quantity/{operation}")
+    public ResponseEntity<CartDTO> updateCartProduct(@PathVariable Long productId, @PathVariable String operation){
+        CartDTO cartDTO = cartService.updateProductQuantityInCart(productId, operation.equalsIgnoreCase("delete") ? -1 : 1);
+        return new ResponseEntity<CartDTO>(cartDTO, HttpStatus.OK);
     }
 
 }
