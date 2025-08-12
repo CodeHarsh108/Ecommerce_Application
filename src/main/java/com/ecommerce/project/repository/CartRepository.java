@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
@@ -17,4 +19,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 
     @Query("DELETE from CartItem ci WHERE ci.cart.id = ?1 AND ci.product.id = ?2")
     void deleteCartItemByProductIdAndCartId(Long cartId, Long productId);
+
+    @Query("SELECT c from Cart c JOIN FETCH c.cartItems ci JOIN FETCH ci.product p WHERE p.id = ?1")
+    List<Cart> findCartByProductId(Long productId);
 }
