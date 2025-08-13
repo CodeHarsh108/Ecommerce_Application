@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class AddressController {
@@ -26,6 +28,18 @@ public class AddressController {
         User user = authUtil.loggedInUser();
         AddressDTO savedAddressDTO = addressService.createAddress(addressDTO, user);
         return new ResponseEntity<>(savedAddressDTO, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/addresses")
+    public ResponseEntity<List<AddressDTO>> getAddress(){
+        List<AddressDTO> addressDTOList = addressService.getAddress();
+        return new ResponseEntity<>(addressDTOList, HttpStatus.OK);
+    }
+
+    @GetMapping("/addresses/{addressId}")
+    public ResponseEntity<AddressDTO> getAddressById(@PathVariable Long addressId){
+        AddressDTO addresses = addressService.getAddressById(addressId);
+        return new ResponseEntity<>(addresses, HttpStatus.OK);
     }
 
 }
