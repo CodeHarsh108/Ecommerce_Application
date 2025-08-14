@@ -24,10 +24,10 @@ public class SwaggerConfig {
         SecurityRequirement bearerRequirement = new SecurityRequirement()
                 .addList("Bearer Authentication");
         return new OpenAPI()
-//                .info(new Info()
-//                        .title("Spring Boot eCommerce API")
-//                        .version("1.0")
-//                        .description("This is a Spring Boot Project for eCommerce"))
+                .info(new Info()
+                        .title("Spring Boot eCommerce API")
+                        .version("1.0")
+                        .description("This is a Spring Boot Project for eCommerce"))
                          .components(new Components()
                         .addSecuritySchemes("Bearer Authentication", bearerScheme))
                 .addSecurityItem(bearerRequirement);
