@@ -49,6 +49,13 @@ public class ProductServiceImpl implements ProductService {
     @Value("${project.image}")
     private String path;
 
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
+
+    public ProductServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
     @Override
     public ProductDTO addProduct(ProductDTO productDTO, Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
@@ -89,7 +96,12 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         Page<Product> productPage = productRepository.findAll(pageDetails);
         List<Product> products = productPage.getContent();
-        List<ProductDTO> productDTOs = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).collect(Collectors.toList());
+        List<ProductDTO> productDTOs = products.stream().map(
+                product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setImage(constructImageURL(product.getImage()));
+                    return productDTO;
+                }).toList();
         if(products.isEmpty()){
             throw new APIException("No Products Exist!!");
         }
@@ -101,6 +113,12 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setTotalPages(productPage.getTotalPages());
         productResponse.setLastPage(productPage.isLast());
         return productResponse;
+    }
+
+
+    private String constructImageURL(String imageName){
+//        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : "/" + imageName;
+        return imageBaseUrl + (imageBaseUrl.endsWith("/") ? "" : "/") + imageName;
     }
 
     @Override
