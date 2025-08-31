@@ -1,4 +1,5 @@
 package com.ecommerce.project.controller;
+
 import com.ecommerce.project.config.AppConstants;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.ProductDTO;
@@ -39,7 +40,9 @@ public class ProductController {
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCTS_BY, required = false) String sortBy,
             @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
     ){
-        ProductResponse productResponse = productService.getAllProducts(pageNumber, pageSize, sortBy, sortOrder, keyword, category);
+        // Convert 1-based page number from frontend to 0-based for Spring
+        int page = (pageNumber != null && pageNumber > 0) ? pageNumber - 1 : 0;
+        ProductResponse productResponse = productService.getAllProducts(page, pageSize, sortBy, sortOrder, keyword, category);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
@@ -48,8 +51,10 @@ public class ProductController {
                                                                  @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
                                                                  @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
                                                                  @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCTS_BY, required = false) String sortBy,
-                                                                 @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder                                                    ){
-        ProductResponse productResponse = productService.searchByCategory(categoryId, pageNumber, pageSize, sortBy, sortOrder);
+                                                                 @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
+        // Convert 1-based page number from frontend to 0-based for Spring
+        int page = (pageNumber != null && pageNumber > 0) ? pageNumber - 1 : 0;
+        ProductResponse productResponse = productService.searchByCategory(categoryId, page, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }
 
@@ -60,7 +65,9 @@ public class ProductController {
                                                                 @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCTS_BY, required = false) String sortBy,
                                                                 @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder
     ){
-        ProductResponse productResponse = productService.getProductsByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        // Convert 1-based page number from frontend to 0-based for Spring
+        int page = (pageNumber != null && pageNumber > 0) ? pageNumber - 1 : 0;
+        ProductResponse productResponse = productService.getProductsByKeyword(keyword, page, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(productResponse, HttpStatus.FOUND);
     }
 
@@ -81,6 +88,4 @@ public class ProductController {
         ProductDTO updatedProduct = productService.updateProductImage(productId, image);
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
-
-
 }

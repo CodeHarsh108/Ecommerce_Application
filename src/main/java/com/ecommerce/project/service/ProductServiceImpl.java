@@ -156,14 +156,31 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<Product> productPage = productRepository.findByProductNameLikeIgnoreCase('%' + keyword + '%' ,pageDetails);
+
+        // Use correct pattern format - remove the % signs as they're added in the repository method
+        Page<Product> productPage = productRepository.findByProductNameContainingIgnoreCase(keyword, pageDetails);
+
         List<Product> products = productPage.getContent();
         if(products.isEmpty()){
             throw new APIException("No Products Exist!!");
         }
-        List<ProductDTO> productDTOs = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).collect(Collectors.toList());
+
+        List<ProductDTO> productDTOs = products.stream()
+                .map(product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setImage(constructImageURL(product.getImage()));
+                    return productDTO;
+                })
+                .collect(Collectors.toList());
+
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOs);
+        productResponse.setPageNumber(productPage.getNumber());
+        productResponse.setPageSize(productPage.getSize());
+        productResponse.setTotalElements(productPage.getTotalElements());
+        productResponse.setTotalPages(productPage.getTotalPages());
+        productResponse.setLastPage(productPage.isLast());
+
         return productResponse;
     }
 
