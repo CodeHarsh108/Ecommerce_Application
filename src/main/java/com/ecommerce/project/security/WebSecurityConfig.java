@@ -23,7 +23,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Set;
 
 @Configuration
@@ -61,15 +65,19 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests.requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/admin").permitAll()
-                .requestMatchers("/api/test").permitAll()
-                .requestMatchers("/images/**").permitAll()
-                .anyRequest().authenticated());
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/admin").permitAll()
+                        .requestMatchers("/api/test").permitAll()
+                        .requestMatchers("/images/**").permitAll()
+                        .anyRequest().authenticated()
+                );
         http.authenticationProvider(authenticationProvider());
         http.exceptionHandling(
                 exception -> exception.authenticationEntryPoint(unauthorizedHandler)
@@ -81,6 +89,21 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    // CORS Configuration Bean
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Your React app origin
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+        configuration.setAllowCredentials(true); // Important for cookies/auth
+        configuration.setMaxAge(3600L); // 1 hour
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration); // Apply to all API endpoints
+        return source;
+    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
@@ -119,7 +142,6 @@ public class WebSecurityConfig {
             Set<Role> userRoles = Set.of(userRole);
             Set<Role> sellerRoles = Set.of(sellerRole);
             Set<Role> adminRoles = Set.of(userRole, sellerRole, adminRole);
-
 
             // Create users if not already present
             if (!userRepository.existsByUsername("user1")) {
