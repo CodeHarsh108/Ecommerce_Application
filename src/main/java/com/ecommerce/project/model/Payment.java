@@ -14,9 +14,10 @@ import lombok.NoArgsConstructor;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String paymentId;
+    private Long paymentId;
 
-    @OneToOne(mappedBy = "payment", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToOne
+    @JoinColumn(name = "order_id") // Add this to establish relationship
     private Order order;
 
     @NotBlank

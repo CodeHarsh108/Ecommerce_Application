@@ -176,7 +176,7 @@ public class CartServiceImpl implements CartService{
             return productDTO;
         });
         cartDTO.setProducts(productDTOStream.toList());
-        return null;
+        return cartDTO;
     }
 
     @Transactional

@@ -29,8 +29,7 @@ public class Order {
 
     private LocalDate orderDate;
 
-    @OneToOne
-    @JoinColumn(name = "payment_id")
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
 
     private Double totalAmount;

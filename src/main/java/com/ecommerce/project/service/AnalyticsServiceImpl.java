@@ -18,16 +18,14 @@ public class AnalyticsServiceImpl implements AnalyticsService{
 
     @Override
     public AnalyticsResponse getAnalyticsData() {
-        AnalyticsResponse analyticsResponse = new AnalyticsResponse();
-        long productCount = productRepository.count();
-        long totalOrders = orderRepository.count();
+        Long productCount = productRepository.count();
+        Long totalOrders = orderRepository.count();
         Double totalRevenue = orderRepository.getTotalRevenue();
 
-        analyticsResponse.setProductCount(String.valueOf(productCount));
-        analyticsResponse.setTotalOrders(String.valueOf(totalOrders));
-        analyticsResponse.setTotalRevenue(String.valueOf(totalRevenue != null ? totalRevenue : 0));
-
-
-        return analyticsResponse;
+        return new AnalyticsResponse(
+                productCount,
+                totalRevenue != null ? totalRevenue : 0.0,
+                totalOrders
+        );
     }
 }

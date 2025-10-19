@@ -17,7 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
-@ToString
 public class Product {
 
     @Id
@@ -39,14 +38,17 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @ToString.Exclude
     private Category category;
 
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
+    @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ToString.Exclude
     private List<CartItem> products = new ArrayList<>();
 
 
