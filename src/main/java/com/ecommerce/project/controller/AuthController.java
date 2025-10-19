@@ -54,7 +54,6 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    @Operation(summary = "Sign in", description = "Make sure to sign in before doing other operations")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
         try {
@@ -68,14 +67,26 @@ public class AuthController {
             Map<String, Object> map = new HashMap<>();
             map.put("message", "Bad Credentials");
             map.put("status", false);
-            return new ResponseEntity<Object>(map, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Object>(map, HttpStatus.NOT_FOUND);
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
         List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority()).collect(Collectors.toList());
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(response);
+
+        // Generate JWT token string for response body
+        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+
+        UserInfoResponse response = new UserInfoResponse(
+                userDetails.getId(),
+                jwtToken, // Make sure this is included
+                userDetails.getUsername(),
+                roles
+        );
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(response);
     }
 
 
