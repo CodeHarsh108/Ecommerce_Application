@@ -78,6 +78,9 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(response);
     }
 
+
+
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody  SignupRequest signupRequest){
         if(userRepository.existsByUsername(signupRequest.getUsername())){
