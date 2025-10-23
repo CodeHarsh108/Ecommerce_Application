@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -84,6 +85,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //n//
+                        .requestMatchers("/api/seller/**").hasAnyRole("ADMIN", "SELLER") //n//
 
                         // Role-based access
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
